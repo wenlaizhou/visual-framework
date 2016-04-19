@@ -15,7 +15,7 @@ public class Bootstrap {
 
     /**
      * 应用入口<br>
-     * core 测试使用
+     * core 
      * java.util.logging.config.file<br>
      * java.util.logging.manager
      *

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--文件列表查看,放到${resource.dir}目录下的WEB-INF文件夹下即可查看文件列表-->
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+    <display-name>Browser</display-name>
+    <description>File Browsing Application for the Document Share</description>
+
+    <filter>
+        <filter-name>auth</filter-name>
+        <filter-class>cn.framework.core.container.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>auth</filter-name>
+        <url-pattern>/</url-pattern>
+    </filter-mapping>
+
+    <!-- Enable directory listings by overriding the server default web.xml -->
+    <!-- definition for the default servlet -->
+    <servlet>
+        <servlet-name>defaultList</servlet-name>
+        <servlet-class>
+            org.apache.catalina.servlets.DefaultServlet
+        </servlet-class>
+        <init-param>
+            <param-name>debug</param-name>
+            <param-value>0</param-value>
+        </init-param>
+        <init-param>
+            <param-name>listings</param-name>
+            <param-value>true</param-value>    <!-- This setting enables/disables directory listings -->
+        </init-param>
+        <init-param>
+            <param-name>gzip</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Add a mapping for our new default servlet -->
+    <servlet-mapping>
+        <servlet-name>defaultList</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+</web-app>

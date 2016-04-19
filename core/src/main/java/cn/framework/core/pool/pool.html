@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="wenlai">
+
+    <title>pool</title>
+
+    <!-- Bootstrap core CSS -->
+    ${frame-header}
+<style type="text/css">
+body {
+    padding-top: 50px;
+}
+
+.starter-template {
+    padding: 40px 15px;
+    text-align: left;
+}
+
+.textarea {
+    width: 100%;
+    height: 220px;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">framework</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/service/ui">API</a>
+                </li>
+                <li class="active">
+                    <a href="/pool-ui">POOL</a>
+                </li>
+                <li>
+                    <a href="/thread-pool-ui">THREAD-POOL</a>
+                </li>
+                <li>
+                    <a href="/thread-ui">THREAD</a>
+                </li>
+                <li>
+                    <a href="/system-ui">SYSTEM</a>
+                </li>
+                <li>
+                    <a href="/tomcat-manager">CONTAINER</a>
+                </li>
+                <li>
+                    <a href="/druid-ui">DATA-SOURCE</a>
+                </li>
+                <li>
+                    <a href="/database-ui">DATA-UI</a>
+                </li>
+                <li>
+                    <a href="/cache-ui">CACHE</a>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>池id</th>
+            <th>空闲数量</th>
+            <th>总数量</th>
+        </tr>
+        </thead>
+        <tbody>
+        <content></content>
+        </tbody>
+    </table>
+</div>
+
+${frame-powered}
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+${frame-footer}
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script type="text/javascript">
+		
+	</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="wenlai">
+
+    <title>database-detail</title>
+
+    <!-- Bootstrap core CSS -->
+    ${frame-header}
+<style type="text/css">
+body {
+    padding-top: 50px;
+}
+
+.starter-template {
+    padding: 40px 15px;
+    text-align: left;
+}
+
+.textarea {
+    width: 100%;
+    height: 220px;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">framework</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/service/ui">API</a>
+                </li>
+                <li>
+                    <a href="/pool-ui">POOL</a>
+                </li>
+                <li>
+                    <a href="/thread-pool-ui">THREAD-POOL</a>
+                </li>
+                <li>
+                    <a href="/thread-ui">THREAD</a>
+                </li>
+                <li>
+                    <a href="/system-ui">SYSTEM</a>
+                </li>
+                <li>
+                    <a href="/tomcat-manager">CONTAINER</a>
+                </li>
+                <li>
+                    <a href="/druid-ui">DATA-SOURCE</a>
+                </li>
+                <li class="active">
+                    <a href="/database-ui">DATA-UI</a>
+                </li>
+                <li>
+                    <a href="/cache-ui">CACHE</a>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container">
+    <div class="starter-template">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <strong>${name}</strong> &nbsp; &nbsp; ${description}
+            </div>
+            <div class="panel-body">
+                <!-- for param : params -->
+                <strong>Method : ${method}</strong>
+                <br/>
+                <strong>Action : ${actionId}</strong><br/>
+                <strong>数据统一接口处理地址 : &nbsp;
+                    <p class="text-danger">/data/service</p>
+                </strong>
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>参数</th>
+                        <th>类型</th>
+                        <th>注释</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    ${body}
+                    </tbody>
+                </table>
+                <p class="bg-warning text-danger">
+                    <strong>接口调用说明:</strong>&nbsp;请求地址统一,调用参数为正文信息,参数增加request_action字段标识调用的过程id<br/>
+                    使用<strong>framework</strong>调用方式如下:<br/>
+                    data.request_action = actionId;<br/>
+                    framework.get("/data/service", data, function (res) {
+                    <br/>
+                    });
+                </p>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="4" id="param">{}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <input class="btn btn-default" actionId="${actionId}" method="${method}" onclick="callClick(this);" type="button" value="调用">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="4" id="result">调用结果</textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+${frame-powered}
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+${frame-footer}
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script type="text/javascript">
+    function callClick(element) {
+        var $element = $(element);
+        var actionId = $element.attr("actionId");
+        var method = $element.attr("method");
+        var data = $("#param").val();
+        data = framework.toJson(data);
+        data = data || {};
+        data.request_action = actionId;
+        if (data) {
+            if (method == "GET") {
+                framework.get("/data/service", data, function (res) {
+                    $("#result").val(res);
+                });
+            }
+            else {
+                framework.post("/data/service", data, function (res) {
+                    $("#result").val(res);
+                });
+            }
+        }
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true" monitoring="autodetect" dynamicConfig="true" name="wenlai">
+
+    <diskStore path="${cache.dir}" />
+
+    <transactionManagerLookup class="net.sf.ehcache.transaction.manager.DefaultTransactionManagerLookup"
+            properties="jndiName=java:/TransactionManager" propertySeparator=";" />
+
+    <!--<managementRESTService bind="0.0.0.0:${cache.port}" enabled="true" needClientAuth="false" sslEnabled="false" sampleSearchIntervalSeconds="10" sampleIntervalSeconds="10" sampleHistorySize="100" />-->
+
+    <defaultCache maxEntriesLocalHeap="0" eternal="false" timeToIdleSeconds="1200" timeToLiveSeconds="1200">
+    </defaultCache>
+
+    <cache name="cacheQ" logging="true" maxElementsInMemory="1024676" timeToLiveSeconds="1200">
+        <cacheEventListenerFactory class="cn.framework.cache.resource.QListener" listenFor="all" propertySeparator=";" />
+        <persistence strategy="distributed" synchronousWrites="true" />
+    </cache>
+
+    <cache name="session" logging="true" maxElementsInMemory="1024676" timeToLiveSeconds="${session.expireSeconds}">
+        <cacheEventListenerFactory class="cn.framework.cache.session.FrameworkSessionListener" listenFor="all" />
+        <persistence strategy="distributed" synchronousWrites="true" />
+    </cache>
+</ehcache>

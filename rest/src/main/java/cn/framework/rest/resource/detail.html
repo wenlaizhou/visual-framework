@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="wenlai">
+
+    <title>api</title>
+
+    <!-- Bootstrap core CSS -->
+    ${frame-header}
+<style type="text/css">
+body {
+    padding-top: 50px;
+}
+
+.starter-template {
+    padding: 40px 15px;
+    text-align: left;
+}
+
+.textarea {
+    width: 100%;
+    height: 220px;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span><span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">framework</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="/service/ui">API</a>
+                </li>
+                <li>
+                    <a href="/pool-ui">POOL</a>
+                </li>
+                <li>
+                    <a href="/thread-pool-ui">THREAD-POOL</a>
+                </li>
+                <li>
+                    <a href="/thread-ui">THREAD</a>
+                </li>
+                <li>
+                    <a href="/system-ui">SYSTEM</a>
+                </li>
+                <li>
+                    <a href="/tomcat-manager">CONTAINER</a>
+                </li>
+                <li>
+                    <a href="/druid-ui">DATA-SOURCE</a>
+                </li>
+                <li>
+                    <a href="/database-ui">DATA-UI</a>
+                </li>
+                <li>
+                    <a href="/cache-ui">CACHE</a>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="starter-template">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 id="title" class="panel-title">{title}</h3>
+                &nbsp;&nbsp;
+                <h6 id="description">{description}</h6>
+            </div>
+            <div class="panel-body">
+
+                <div class="well well-sm">
+                    <button id="title_btn" class="btn btn-primary" type="button">
+                        {request} :
+                        <span class="badge" id="call_url"></span>
+                    </button>
+                </div>
+
+                <div id="param_table" class="well well-sm">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>参数名称</th>
+                            <th>参数类型</th>
+                            <th>描述</th>
+                        </tr>
+                        </thead>
+                        <tbody id="param_body"></tbody>
+                    </table>
+                </div>
+
+                <div class="well well-sm">
+                    <div class="input-group input-group-lg">
+                        <input id="param_input" type="text" class="form-control" placeholder="[调用参数] json 格式..."> <span class="input-group-btn">
+								<button id="call" class="btn btn-default btn-danger" type="button">调用</button>
+							</span>
+                    </div>
+                    <!-- /input-group -->
+                </div>
+                <div class="panel panel-warning">
+                    <div class="panel-heading">result</div>
+                    <div class="panel-body">
+							<textarea id="result" class="textarea" readonly="readonly">
+                            </textarea>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.container -->
+
+${frame-powered}
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+${frame-footer}
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script type="text/javascript">
+        var data = {data};
+        // var data = JSON.parse(dataStr);
+        var queryStr = window.location.href.split('?');
+        if (queryStr.length <= 1) {
+            alert("非法路径");
+        }
+        var classKey;
+        var methodKey;
+        queryStr = queryStr[1];
+        var queryParamsStr = queryStr.split("&");
+        for (var i = 0; i < queryParamsStr.length; i++) {
+            var queryParamStr = queryParamsStr[i].split("=");
+            var key = queryParamStr[0];
+            var value = queryParamStr[1];
+            if (key == "class") {
+                classKey = value;
+            }
+            if (key == "method") {
+                methodKey = value;
+            }
+        }
+        var classData = data[classKey];
+        var methodData = classData["methods"][methodKey];
+        var isGet = methodData["method"] == "GET";
+        var request_url = "/service"
+        var classPath = classData["classServicePath"][0] == '/' ? classData["classServicePath"] : '/' + classData["classServicePath"];
+        var methodPath = methodData["path"][0] == '/' ? methodData["path"] : '/' + methodData["path"];
+        var params = methodData["params"] ? methodData["params"] : null;
+        var exampleParam = methodData["example"] ? methodData["example"] : "";
+        request_url = request_url + classPath + methodPath;
+        $(function () {
+            if (params && params.length > 0) {
+                var param_body_html = "";
+                for (var i = 0; i < params.length; i++) {
+                    var param = params[i];
+                    param_body_html = param_body_html + "<tr><td>{name}</td><td>{type}</td><td>{description}</td></tr>";
+                    param_body_html = param_body_html.replace("{name}", param["paramName"]).replace("{type}", param["type"]).replace("{description}", param["description"] ? param["description"] : "");
+                }
+                $("#param_body").html(param_body_html);
+                $("#param_input").val(exampleParam);
+            }
+            else {
+                $("#param_table").hide();
+            }
+            $("#call").click(function (element) {
+                var inputParamStr = $("#param_input").val();
+                try {
+                    if (params && params.length > 0) {
+                        var servicePath = request_url;
+                        var inputParam = eval("(" + inputParamStr + ")");
+                        if (params != null && params.length > 0) {
+                            var isfirst = true;
+                            for (var i = 0; i < params.length; i++) {
+                                var param = params[i];
+                                if (param["type"] && param["type"] == "Path") {
+                                    servicePath = servicePath.replace("{" + param["paramName"] + "}", inputParam[param["paramName"]]);
+                                    delete inputParam[param["paramName"]];
+                                }
+                                if (!isGet && param["type"] == "Query") {
+                                    if (isfirst) {
+                                        servicePath = servicePath + "?" + param["paramName"] + "=" + inputParam[param["paramName"]];
+                                    }
+                                    else {
+                                        servicePath = servicePath + "&" + param["paramName"] + "=" + inputParam[param["paramName"]];
+                                    }
+                                    delete inputParam[param["paramName"]];
+                                    isfirst = false;
+                                }
+                            }
+                        }
+                        else {
+                            inputParam = null;
+                        }
+                    }
+                    else {
+                        servicePath = request_url;
+                    }
+                    inputParam = inputParam || {};
+
+                    if (isGet) {
+                        framework.get(servicePath, inputParam, function (res) {
+                            $("#result").val(res);
+                        });
+                    }
+                    else {
+                        framework.post(servicePath, inputParam, function(res) {
+                            $("#result").val(res);
+                        });
+                    }
+                }
+                catch (e) {
+                    console.log(e);
+                    alert("参数不正确");
+                    return;
+                }
+            });
+            $("#title_btn").html($("#title_btn").html().replace("{request}", isGet ? "GET" : "POST"));
+            $("#call_url").click(function (res) {
+                window.open(request_url);
+            });
+            param_input.onkeydown = function (event) {
+                if (event && event.keyCode == 13) {
+                    $("#call").click();
+                }
+            }
+        });
+
+        $("#title").text(methodKey);
+        $("#description").text(methodData["description"] ? methodData["description"] : "");
+        $("#call_url").text(request_url);
+    </script>
+</body>
+
+</html>

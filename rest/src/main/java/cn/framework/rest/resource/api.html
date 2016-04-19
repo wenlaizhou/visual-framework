@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="wenlai">
+
+    <title>api</title>
+
+    <!-- Bootstrap core CSS -->
+    ${frame-header}
+<style type="text/css">
+body {
+    padding-top: 50px;
+}
+
+.starter-template {
+    padding: 40px 15px;
+    text-align: left;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">framework</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="/service/ui">API</a>
+                </li>
+                <li>
+                    <a href="/pool-ui">POOL</a>
+                </li>
+                <li>
+                    <a href="/thread-pool-ui">THREAD-POOL</a>
+                </li>
+                <li>
+                    <a href="/thread-ui">THREAD</a>
+                </li>
+                <li>
+                    <a href="/system-ui">SYSTEM</a>
+                </li>
+                <li>
+                    <a href="/tomcat-manager">CONTAINER</a>
+                </li>
+                <li>
+                    <a href="/druid-ui">DATA-SOURCE</a>
+                </li>
+                <li>
+                    <a href="/database-ui">DATA-UI</a>
+                </li>
+                <li>
+                    <a href="/cache-ui">CACHE</a>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="starter-template" id="template">
+        <!-- for class : classes -->
+
+    </div>
+
+</div>
+<!-- /.container -->
+
+<div style="display: none;" id="container">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <strong><a href="javascript:void(0);" onclick="slice_next(this);">{title}</a></strong>&nbsp;&nbsp;{description}
+        </div>
+        <div class="panel-body" style="display: none;">
+            <!-- for method : methods -->
+            {content}
+        </div>
+    </div>
+</div>
+<div style="display: none;" id="contentContainer">
+    <div class="alert alert-warning" role="alert">
+        <strong>{method}</strong>
+        <br/> {name} &nbsp;&nbsp; {description} &nbsp;&nbsp;
+        <a href="/service/ui/api?class={class}&method={methodname}" target="_blank">{api-path}</a>
+    </div>
+</div>
+
+${frame-powered}
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+${frame-footer}
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script type="text/javascript">
+		function slice_next(element) {
+            var body_element = $($(element).parent().parent().siblings("div")[0]);
+            if (body_element.css("display") == "none") {
+                body_element.show("slow");
+            }
+            else {
+                body_element.hide("slow");
+            }
+        }
+        var data = {data};
+        // var data = eval('(' + dataStr + ')');
+
+        $(function () {
+            var html = "";
+            var panelHtml = $("#container").html();
+            var nodeHtml = $("#contentContainer").html();
+            for (var serviceClassName in data) {
+                var serviceClass = data[serviceClassName];
+                var panel = panelHtml.replace("{title}", serviceClassName).replace("{description}", serviceClass["description"] ? serviceClass["description"] : "");
+                node = "";
+                var methods = serviceClass["methods"];
+                if (methods != null) {
+                    for (var serviceMethodName in methods) {
+                        var serviceMethod = methods[serviceMethodName];
+                        node += nodeHtml.replace(/\{method\}/g, serviceMethod["method"]).replace("{description}", serviceMethod["description"] ? serviceMethod["description"] : "").replace("{api-path}", serviceClass["classServicePath"] + serviceMethod["path"]).replace("{name}", serviceMethodName).replace(/\{class\}/g, serviceClassName).replace("{methodname}", serviceMethodName);
+                    }
+                }
+                panel = panel.replace("{content}", node);
+                html += panel;
+            }
+            $("#template").html(html);
+        });
+
+	</script>
+</body>
+</html>

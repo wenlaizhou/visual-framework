@@ -1,0 +1,128 @@
+#!/bin/bash
+
+#/////////////////////////////////
+#配置：
+MAIN_JAR=coupon.jar
+
+MAIN_CLASS=cn.etcp.coupon.App
+
+UNPACK_ENABLED=false
+
+JMX_ENABLED=true
+
+JMX_PORT=9019
+
+JMX_ACCESS_FILE=jmx.access
+
+JMX_PWD_FILE=jmx.pwd
+#/////////////////////////////////
+#dir为目录
+#path为文件路径
+
+HOME=$(dirname $(pwd))
+
+WORK_DIR=${HOME}/tomcat-work
+
+BIN_DIR=${HOME}/bin
+if [ ! -d ${BIN_DIR} ];then
+    mkdir -p ${BIN_DIR}
+fi
+
+LIB_DIR=${HOME}/lib
+if [ ! -d ${LIB_DIR} ];then
+    mkdir -p ${LIB_DIR}
+fi
+
+CONF_DIR=${HOME}/conf
+if [ ! -d ${CONF_DIR} ];then
+    mkdir -p ${CONF_DIR}
+fi
+
+LOG_DIR=${HOME}/log
+if [ ! -e ${LOG_DIR} ];then
+    mkdir -p ${LOG_DIR}
+    touch ${LOG_DIR}/console.log
+fi
+
+NATIVE_DIR=${HOME}/native
+if [ ! -e ${NATIVE_DIR} ];then
+    mkdir -p ${NATIVE_DIR}
+fi
+
+#rm -f ${LOG_DIR}/*
+
+MAIN_PATH=${LIB_DIR}/${MAIN_JAR}
+
+UNPACK_DIR=${WORK_DIR}/unpack
+
+LIB_JARS=""
+for i in $(ls ${LIB_DIR}/*.jar);do
+    #if [ ${i} != ${MAIN_PATH} ];then
+        if [ -z ${LIB_JARS} ];then
+            LIB_JARS=${i}
+        else
+            LIB_JARS=${LIB_JARS}:${i}
+        fi
+    #fi
+done
+
+if ${UNPACK_ENABLED};then
+    echo 正在解压jar包
+    if [ ! -d ${UNPACK_DIR} ];then
+        mkdir -p ${UNPACK_DIR}
+    fi
+    unzip -o -d ${UNPACK_DIR} ${LIB_PATH}/${MAIN_JAR}
+    MAIN_PATH=${UNPACK_DIR}
+    LIB_JARS=${LIB_JARS}:${MAIN_PATH}
+    echo 解压完毕
+fi
+
+CLASS_PATH=${MAIN_PATH}
+
+# user.dir
+# conf.dir
+# class.path
+# log.dir
+# lib.dir
+# mjar.path
+# upk.dir
+# upk.enabled
+# main.class
+
+PROPERTIES="-d64"
+PROPERTIES="${PROPERTIES} -server"
+PROPERTIES="${PROPERTIES} -XX:+UseG1GC"
+PROPERTIES="${PROPERTIES} -Djava.nio.channels.spi.SelectorProvider=sun.nio.ch.EPollSelectorProvider"
+#PROPERTIES="${PROPERTIES} -Djava.library.path=${LIB_PATH}"
+PROPERTIES="${PROPERTIES} -Duser.dir=${HOME}"
+
+if [ ${JMX_ENABLED} ];then
+    chmod 600 ${CONF_DIR}/${JMX_ACCESS_FILE}
+    chmod 600 ${CONF_DIR}/${JMX_PWD_FILE}
+    PROPERTIES="${PROPERTIES} -Djava.rmi.server.hostname=$(hostname)"
+    PROPERTIES="${PROPERTIES} -Dcom.sun.management.jmxremote.port=${JMX_PORT}"
+    PROPERTIES="${PROPERTIES} -Dcom.sun.management.jmxremote.authenticate=true"
+    PROPERTIES="${PROPERTIES} -Dcom.sun.management.jmxremote.access.file=${CONF_DIR}/${JMX_ACCESS_FILE}"
+    PROPERTIES="${PROPERTIES} -Dcom.sun.management.jmxremote.password.file=${CONF_DIR}/${JMX_PWD_FILE}"
+    PROPERTIES="${PROPERTIES} -Dcom.sun.management.jmxremote.ssl=false"
+fi
+
+PROPERTIES="${PROPERTIES} -Dconf.dir=${CONF_DIR}"
+PROPERTIES="${PROPERTIES} -classpath ${LIB_JARS}"
+PROPERTIES="${PROPERTIES} -Djava.library.path=${NATIVE_DIR}"
+PROPERTIES="${PROPERTIES} -Dlog.dir=${LOG_DIR}"
+PROPERTIES="${PROPERTIES} -Dlib.dir=${LIB_DIR}"
+PROPERTIES="${PROPERTIES} -Dmain.class=${MAIN_CLASS}"
+PROPERTIES="${PROPERTIES} -Dmjar.path=${LIB_DIR}/${MAIN_JAR}"
+PROPERTIES="${PROPERTIES} -Dupk.enabled=${UNPACK_ENABLED}"
+PROPERTIES="${PROPERTIES} -Dupk.dir=${UNPACK_DIR}"
+PROPERTIES="${PROPERTIES} -Dwork.dir=${WORK_DIR}"
+PROPERTIES="${PROPERTIES} -Dlog4j.configurationFile=file:${CONF_DIR}/log4j.xml"
+
+nohup java ${PROPERTIES} ${MAIN_CLASS} 2>&1 >> ${LOG_DIR}/console.log &
+
+echo 启动服务成功
+
+echo 监控输出日志中：
+
+tail -f ${LOG_DIR}/console.log

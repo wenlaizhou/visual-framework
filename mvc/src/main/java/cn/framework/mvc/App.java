@@ -1,8 +1,6 @@
 package cn.framework.mvc;
 
 
-import com.google.common.reflect.ClassPath;
-
 /**
  * test
  */

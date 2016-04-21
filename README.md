@@ -23,6 +23,8 @@ add repository
 </repository>
 ```
 add dependencies
+<br/>
+framework.version = 2.0.2
 ```xml
 <dependency>
     <groupId>cn.framework</groupId>

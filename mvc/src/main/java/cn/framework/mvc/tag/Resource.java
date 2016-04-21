@@ -14,11 +14,11 @@ import java.lang.annotation.Target;
 
 /**
  * 所有需要使用http资源，都必须标记
- * 
+ *
  * @author wenlai
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Resource {
-    
+
 }

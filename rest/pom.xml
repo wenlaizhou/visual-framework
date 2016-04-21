@@ -3,7 +3,7 @@
 
     <groupId>cn.framework</groupId>
     <artifactId>rest</artifactId>
-    <version>2.0.1</version>
+    <version>${framework.version}</version>
     <packaging>jar</packaging>
 
     <name>rest</name>
@@ -23,6 +23,7 @@
             <url>https://repo1.maven.org/maven2</url>
         </repository>
     </repositories>
+
     <build>
         <resources>
             <resource>
@@ -57,17 +58,19 @@
             </plugin>
         </plugins>
     </build>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jersey.version>2.22.1</jersey.version>
         <jersey.core.version>2.22.1</jersey.core.version>
+        <framework.version>2.0.2</framework.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>cn.framework</groupId>
             <artifactId>core</artifactId>
-            <version>2.0.1</version>
+            <version>${framework.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>

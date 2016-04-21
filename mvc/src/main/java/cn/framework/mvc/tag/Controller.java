@@ -14,16 +14,16 @@ import java.lang.annotation.Target;
 
 /**
  * mvc中的controller必须要打上的标签
- * 
+ *
  * @author wenlai
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Controller {
-    
+
     /**
      * controller的路径
-     * 
+     *
      * @return
      */
     String value();

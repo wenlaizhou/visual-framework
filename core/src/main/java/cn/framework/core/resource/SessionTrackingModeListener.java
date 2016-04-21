@@ -19,7 +19,7 @@ public class SessionTrackingModeListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
         ServletContext context = event.getServletContext();
         EnumSet<SessionTrackingMode> modes = EnumSet.of(SessionTrackingMode.SSL);
-        context.setSessionTrackingModes(modes);
+        //        context.setSessionTrackingModes(modes);
     }
 
     @Override

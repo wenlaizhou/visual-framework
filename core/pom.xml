@@ -3,27 +3,41 @@
 
     <groupId>cn.framework</groupId>
     <artifactId>core</artifactId>
-    <version>2.0.1</version>
+    <version>${framework.version}</version>
     <packaging>jar</packaging>
+
     <repositories>
         <repository>
             <id>wenlai-repo</id>
             <name>framework</name>
             <url>http://visual-framework.com:8088/nexus/content/repositories/framework/</url>
         </repository>
+        <!--<repository>-->
+        <!--<id>java.net</id>-->
+        <!--<name>javanet</name>-->
+        <!--<url>https://maven.java.net/content/repositories/releases/</url>-->
+        <!--</repository>-->
         <repository>
-            <id>java.net</id>
-            <name>javanet</name>
-            <url>https://maven.java.net/content/repositories/releases/</url>
+            <id>maven-org2</id>
+            <url>http://central.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>maven-org</id>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>http://repository.sonatype.org/content/groups/public/</url>
+        </repository>
     </repositories>
 
     <name>core</name>
     <url>http://maven.apache.org</url>
+
     <build>
         <resources>
             <resource>
@@ -58,13 +72,35 @@
             </plugin>
         </plugins>
     </build>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tomcat.version>8.0.26</tomcat.version>
         <spring.version>4.2.5.RELEASE</spring.version>
+        <framework.version>2.0.2</framework.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>2.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -80,16 +116,35 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.5</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>javax.servlet</groupId>-->
+            <!--<artifactId>servlet-api</artifactId>-->
+            <!--<version>3.0-alpha-1</version>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>org.apache</groupId>
-            <artifactId>tomcat-embed</artifactId>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat</artifactId>
             <version>${tomcat.version}</version>
         </dependency>
+
+
+        <!--<dependency>-->
+        <!--<groupId>org.apache</groupId>-->
+        <!--<artifactId>tomcat-embed</artifactId>-->
+        <!--<version>${tomcat.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-catalina-ha</artifactId>
             <version>${tomcat.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>jasper</artifactId>
+            <version>6.0.45</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
@@ -162,11 +217,6 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>19.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.mina</groupId>
             <artifactId>mina-core</artifactId>
             <version>2.0.13</version>
@@ -176,20 +226,6 @@
             <artifactId>activemq-all</artifactId>
             <version>5.13.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-            <version>2.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-cli</groupId>
-            <artifactId>commons-cli</artifactId>
-            <version>1.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.3.1</version>
-        </dependency>
+
     </dependencies>
 </project>

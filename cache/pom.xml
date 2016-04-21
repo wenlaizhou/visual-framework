@@ -3,10 +3,7 @@
 
     <groupId>cn.framework</groupId>
     <artifactId>cache</artifactId>
-    <version>2.0.1</version>
-    <modules>
-        <module>../all</module>
-    </modules>
+    <version>${framework.version}</version>
     <packaging>pom</packaging>
 
     <name>cache</name>
@@ -66,13 +63,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ehcache.version>2.8.8</ehcache.version>
         <ehcache.new.version>2.10.1</ehcache.new.version>
+        <framework.version>2.0.2</framework.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>cn.framework</groupId>
             <artifactId>core</artifactId>
-            <version>2.0.1</version>
+            <version>${framework.version}</version>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>

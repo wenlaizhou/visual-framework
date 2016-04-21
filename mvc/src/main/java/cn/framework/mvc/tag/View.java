@@ -14,17 +14,16 @@ import java.lang.annotation.Target;
 
 /**
  * 如果action返回视图，必须标注此标签
- * 
- * @author wenlai
  *
+ * @author wenlai
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface View {
-    
+
     /**
      * view的访问路径
-     * 
+     *
      * @return
      */
     String value();

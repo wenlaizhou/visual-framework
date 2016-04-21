@@ -18,6 +18,7 @@
             <url>http://repo.spring.io/plugins-release/springframework/</url>
         </repository>
     </repositories>
+
     <build>
         <resources>
             <resource>
@@ -53,9 +54,10 @@
             </plugin>
         </plugins>
     </build>
+
     <groupId>cn.framework</groupId>
     <artifactId>mvc</artifactId>
-    <version>2.0.1</version>
+    <version>${framework.version}</version>
     <packaging>jar</packaging>
 
     <name>mvc</name>
@@ -63,18 +65,19 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <framework.version>2.0.2</framework.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>cn.framework</groupId>
             <artifactId>core</artifactId>
-            <version>2.0.1</version>
+            <version>${framework.version}</version>
         </dependency>
         <dependency>
             <groupId>cn.framework</groupId>
             <artifactId>cache</artifactId>
-            <version>2.0.1</version>
+            <version>${framework.version}</version>
         </dependency>
     </dependencies>
 </project>

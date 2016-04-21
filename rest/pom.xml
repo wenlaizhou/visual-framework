@@ -15,12 +15,20 @@
             <url>http://visual-framework.com:8088/nexus/content/repositories/framework/</url>
         </repository>
         <repository>
+            <id>maven-org</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>maven-org2</id>
+            <url>http://central.maven.org/maven2/</url>
+        </repository>
+        <repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </repository>
         <repository>
-            <id>maven.org</id>
-            <url>https://repo1.maven.org/maven2</url>
+            <id>sonatype</id>
+            <url>http://repository.sonatype.org/content/groups/public/</url>
         </repository>
     </repositories>
 

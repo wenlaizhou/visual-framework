@@ -12,18 +12,13 @@
             <name>framework</name>
             <url>http://visual-framework.com:8088/nexus/content/repositories/framework/</url>
         </repository>
-        <!--<repository>-->
-        <!--<id>java.net</id>-->
-        <!--<name>javanet</name>-->
-        <!--<url>https://maven.java.net/content/repositories/releases/</url>-->
-        <!--</repository>-->
-        <repository>
-            <id>maven-org2</id>
-            <url>http://central.maven.org/maven2/</url>
-        </repository>
         <repository>
             <id>maven-org</id>
             <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>maven-org2</id>
+            <url>http://central.maven.org/maven2/</url>
         </repository>
         <repository>
             <id>spring-releases</id>

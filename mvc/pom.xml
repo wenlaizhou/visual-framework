@@ -3,19 +3,25 @@
 
     <repositories>
         <repository>
-            <id>cn.etcp</id>
-            <name>ETCP-JAVA</name>
-            <url>http://dev.etcp.cn:8081/nexus/content/repositories/cn.etcp</url>
+            <id>wenlai-repo</id>
+            <name>framework</name>
+            <url>http://visual-framework.com:8088/nexus/content/repositories/framework/</url>
         </repository>
         <repository>
-            <id>java.net</id>
-            <name>javanet</name>
-            <url>https://maven.java.net/content/repositories/releases/</url>
+            <id>maven-org</id>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <repository>
-            <id>spring.io</id>
-            <name>spring</name>
-            <url>http://repo.spring.io/plugins-release/springframework/</url>
+            <id>maven-org2</id>
+            <url>http://central.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>http://repository.sonatype.org/content/groups/public/</url>
         </repository>
     </repositories>
 

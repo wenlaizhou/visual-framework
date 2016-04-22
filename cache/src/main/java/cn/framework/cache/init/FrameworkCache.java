@@ -1,6 +1,6 @@
 package cn.framework.cache.init;
 
-import cn.framework.cache.session.FrameworkSessionManager;
+import cn.framework.cache.session.FrameworkSessionFilter;
 import cn.framework.core.container.Context;
 import cn.framework.core.container.InitProvider;
 import cn.framework.core.utils.*;
@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
  */
 @Service(FrameworkCache.BEAN_NAME)
 public class FrameworkCache implements InitProvider {
+
+    public static final String CACHE_DIR = "cache.dir";
 
     /**
      * bean name
@@ -54,17 +56,17 @@ public class FrameworkCache implements InitProvider {
             return;
         }
         INITED = true;
-        Property.set("session.expireSeconds", "3600");
+        if (!Property.exist(CACHE_DIR)) {
+            Property.set(CACHE_DIR, Strings.append(Projects.WORK_DIR, "/cache"));
+        }
+        Files.createDirectory(Property.get("cache.dir"));
         ByteArrayInputStream conf = null;
         try {
             if (Property.exist(EHCACHE_CONF_PATH)) {
                 String confPath = Property.get(EHCACHE_CONF_PATH);
                 if (Strings.isNotNullOrEmpty(confPath) && Files.existFilesOrResource(confPath, Projects.MAIN_CLASS_LOADER)) {
-                    if (Files.exist(confPath)) {
-                        conf = new ByteArrayInputStream(Files.read(confPath, Charsets.UTF_8.name()).getBytes(Charsets.UTF_8));
-                    }
-                    else {
-                        conf = new ByteArrayInputStream(Files.readResource(confPath, Projects.MAIN_CLASS_LOADER));
+                    if (Files.existFilesOrResource(confPath, Projects.MAIN_CLASS_LOADER)) {
+                        conf = new ByteArrayInputStream(Property.fill(Files.readFileOrResourceText(confPath, Charsets.UTF_8, Projects.MAIN_CLASS_LOADER)).getBytes(Charsets.UTF_8));
                     }
                 }
             }
@@ -73,7 +75,7 @@ public class FrameworkCache implements InitProvider {
             Exceptions.processException("获取ehcache自定义配置文件失败", x);
         }
         if (conf == null) {
-            conf = new ByteArrayInputStream(Files.readResourceText(DEFAULT_EHCACHE_CONF_PATH, FrameworkCache.class.getClassLoader()).getBytes(Charsets.UTF_8));
+            conf = new ByteArrayInputStream(Property.fill(Files.readResourceText(DEFAULT_EHCACHE_CONF_PATH, FrameworkCache.class.getClassLoader())).getBytes(Charsets.UTF_8));
         }
         try {
             this.manager = CacheManager.create(conf);
@@ -82,9 +84,10 @@ public class FrameworkCache implements InitProvider {
             Exceptions.processException(x);
         }
         if (this.manager != null) {
-            context.getContext().setManager(Springs.get(FrameworkSessionManager.BEAN_NAME));
+            //            context.getContext().setManager(Springs.get(FrameworkSessionManager.BEAN_NAME));
             System.out.println(this.manager.getActiveConfigurationText());
         }
+        context.addFilter("framework-session-filter", FrameworkSessionFilter.class.getName(), "/*");
     }
 
     /**

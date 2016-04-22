@@ -49,7 +49,12 @@ public class QListener extends CacheEventListenerFactory {
                     if (element.getObjectValue() != null && element.getObjectValue() instanceof CachedEvent) {
                         CachedEvent event = (CachedEvent) element.getObjectValue();
                         Exceptions.logProcessor().logger().info("get message : {} {} {} {}", event.getId(), event.getFrom(), event.getTitle(), event.getMessage());
-                        q.directPut(event);
+                        if (event.getDelaySeconds() > 0) {
+                            q.directPut(event, event.getDelaySeconds());
+                        }
+                        else {
+                            q.directPut(event);
+                        }
                     }
                     else {
                         Exceptions.logProcessor().logger().error("message element is invalid {}", element);

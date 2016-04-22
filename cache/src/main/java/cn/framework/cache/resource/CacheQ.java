@@ -6,10 +6,7 @@ import cn.framework.core.container.InitProvider;
 import cn.framework.core.event.ThreadPoolMonitor;
 import cn.framework.core.pool.Task;
 import cn.framework.core.pool.ThreadPool;
-import cn.framework.core.utils.Exceptions;
-import cn.framework.core.utils.Projects;
-import cn.framework.core.utils.Regexs;
-import cn.framework.core.utils.Springs;
+import cn.framework.core.utils.*;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
@@ -22,6 +19,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Node;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +45,8 @@ public class CacheQ implements InitProvider {
 
     private HashMap<String, String> patterns = new HashMap<>();
 
+    private HashMap<String, String> names = new HashMap<>();
+
     private EventBus eventBus;
 
     private Executor executor = ThreadPoolMonitor.add(Executors.newFixedThreadPool(10));
@@ -62,19 +62,31 @@ public class CacheQ implements InitProvider {
         this.eventBus = new AsyncEventBus("cacheQ", this.executor);
         try {
             try {
-                ClassPath.from(Projects.MAIN_CLASS_LOADER).getTopLevelClasses("cn.framework").parallelStream().forEach(classInfo -> { //TODO config pkg name
-                    try {
-                        Class clazz = Class.forName(classInfo.getName());
-                        if (EventSubscriber.class.isAssignableFrom(clazz)) {
-                            if (clazz.getDeclaredAnnotation(Pattern.class) != null) {
-                                this.patterns.put(((Pattern) clazz.getDeclaredAnnotation(Pattern.class)).value(), Springs.getBeanName(clazz));
+                Node eventBusNode = Xmls.xpathNode("//event-bus", context.getConf());
+                if (eventBusNode != null) {
+                    ClassPath.from(Projects.MAIN_CLASS_LOADER).getTopLevelClasses(Xmls.childAttribute("package", "value", eventBusNode)).parallelStream().forEach(classInfo -> { //TODO config pkg name
+                        try {
+                            Class clazz = Class.forName(classInfo.getName());
+                            if (EventSubscriber.class.isAssignableFrom(clazz)) {
+                                if (clazz.getDeclaredAnnotation(Pattern.class) != null) {
+                                    String pattern = ((Pattern) clazz.getDeclaredAnnotation(Pattern.class)).value();
+                                    String beanName = Springs.getBeanName(clazz);
+                                    System.out.println(Strings.format("register event bus subscriber : pattern : ${pattern}, beanName : ${bean}", Pair.newPair("pattern", pattern), Pair.newPair("bean", beanName)));
+                                    this.patterns.put(pattern, beanName);
+                                }
+                                if (clazz.getDeclaredAnnotation(Name.class) != null) {
+                                    String name = ((Name) clazz.getDeclaredAnnotation(Name.class)).value();
+                                    String beanName = Springs.getBeanName(clazz);
+                                    System.out.println(Strings.format("register event bus subscriber : name : ${name}, beanName : ${bean}", Pair.newPair("name", name), Pair.newPair("bean", beanName)));
+                                    this.names.put(name, beanName);
+                                }
                             }
                         }
-                    }
-                    catch (Exception x) {
-                        Exceptions.processException(x);
-                    }
-                });
+                        catch (Exception x) {
+                            Exceptions.processException(x);
+                        }
+                    });
+                }
             }
             catch (Exception x) {
                 Exceptions.processException(x);
@@ -94,7 +106,7 @@ public class CacheQ implements InitProvider {
                     FrameworkCache handler = Springs.get(FrameworkCache.BEAN_NAME);
                     Cache cache;
                     if (handler != null && (cache = handler.getCache(CacheQ.BEAN_NAME)) != null) {
-                        cache.getKeys().parallelStream().forEach(k -> {
+                        cache.getKeys().forEach(k -> {
                             Element e = cache.get(k);
                             if (e != null && e.getObjectValue() instanceof CachedEvent) {
                                 logger.info("重发未被订阅消息", e.getObjectValue());
@@ -145,6 +157,18 @@ public class CacheQ implements InitProvider {
     }
 
     /**
+     * 投递延迟消息
+     *
+     * @param message
+     * @param delaySeconds
+     */
+    void directPut(CachedEvent message, int delaySeconds) {
+        ThreadPool.addDelayTask(Task.wrap("cacheQ-delay-event", () -> {
+            directPut(message);
+        }), delaySeconds);
+    }
+
+    /**
      * 入队
      *
      * @param message
@@ -181,35 +205,21 @@ public class CacheQ implements InitProvider {
     @Subscribe
     @AllowConcurrentEvents
     public void router(CachedEvent message) throws Exception {
-        this.patterns.keySet().parallelStream().forEach(pattern -> {
+
+        if (Strings.isNotNullOrEmpty(message.getTo())) {
+            String bean = this.names.get(message.getTo());
+            if (Strings.isNotNullOrEmpty(bean)) {
+                logger.info("get subscriber : {} {}", bean, message);
+                sendEvent(message, bean);
+            }
+        }
+
+        this.patterns.keySet().forEach(pattern -> {
             if (Regexs.test(pattern, message.getTitle())) {
                 logger.info("get subscriber : {} {}", pattern, message);
                 ThreadPool.addTask(Task.wrap("event-bus", () -> {
                     try {
-                        EventSubscriber subscriber = Springs.get(this.patterns.get(pattern));
-                        if (subscriber != null) {
-                            try {
-                                subscriber.subscriber(message);
-                            }
-                            catch (Exception x) {
-                                Exceptions.processException(x);
-                            }
-                            finally {
-                                try {
-                                    FrameworkCache handler = Springs.get(FrameworkCache.BEAN_NAME);
-                                    Cache cache = null;
-                                    if (handler != null && (cache = handler.getCache(CacheQ.BEAN_NAME)) != null) {
-                                        cache.remove(message.getId());
-                                    }
-                                }
-                                catch (Exception x) {
-                                    Exceptions.processException(x);
-                                }
-                                finally {
-                                    this.localQueue.invalidate(message.getId());
-                                }
-                            }
-                        }
+                        sendEvent(message, this.patterns.get(pattern));
                     }
                     catch (Exception x) {
                         Exceptions.processException(x);
@@ -217,5 +227,32 @@ public class CacheQ implements InitProvider {
                 }));
             }
         });
+    }
+
+    private void sendEvent(CachedEvent message, String bean) {
+        EventSubscriber subscriber = Springs.get(bean);
+        if (subscriber != null) {
+            try {
+                subscriber.subscriber(message);
+            }
+            catch (Exception x) {
+                Exceptions.processException(x);
+            }
+            finally {
+                try {
+                    FrameworkCache handler = Springs.get(FrameworkCache.BEAN_NAME);
+                    Cache cache;
+                    if (handler != null && (cache = handler.getCache(CacheQ.BEAN_NAME)) != null) {
+                        cache.remove(message.getId());
+                    }
+                }
+                catch (Exception x) {
+                    Exceptions.processException(x);
+                }
+                finally {
+                    this.localQueue.invalidate(message.getId());
+                }
+            }
+        }
     }
 }

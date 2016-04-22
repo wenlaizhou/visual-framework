@@ -23,6 +23,11 @@ public class CachedEvent implements Serializable {
     private String from;
 
     /**
+     * to
+     */
+    private String to;
+
+    /**
      * message
      */
     private String message;
@@ -31,6 +36,11 @@ public class CachedEvent implements Serializable {
      * title
      */
     private String title;
+
+    /**
+     * 延迟队列
+     */
+    private int delaySeconds = -1;
 
     /**
      * constructor
@@ -54,6 +64,22 @@ public class CachedEvent implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getTo() {
+        return this.to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public int getDelaySeconds() {
+        return this.delaySeconds;
+    }
+
+    public void setDelaySeconds(int delaySeconds) {
+        this.delaySeconds = delaySeconds;
     }
 
     public String getId() {
@@ -82,6 +108,6 @@ public class CachedEvent implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("message : [id:%s from:%s title:%s message:%s]", this.id, this.from, this.title, this.message);
+        return String.format("message : [id:%s from:%s to:%s title:%s message:%s delay:%d]", this.id, this.to, this.from, this.title, this.message, this.delaySeconds);
     }
 }

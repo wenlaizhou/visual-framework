@@ -8,8 +8,6 @@
 package cn.framework.cache.init;
 
 import cn.framework.cache.pool.RedisPool;
-import cn.framework.cache.session.FrameworkSessionManager;
-import cn.framework.cache.session.FrameworkSessionValve;
 import cn.framework.core.container.Context;
 import cn.framework.core.container.InitProvider;
 import cn.framework.core.utils.Arrays;
@@ -109,8 +107,8 @@ public class CacheInitProvider implements InitProvider {
         }
         // TODO expire seconds
 
-        context.getContext().setManager(new FrameworkSessionManager());
+//        context.getContext().setManager(new FrameworkSessionManager());
 
-        context.getContext().addValve(new FrameworkSessionValve());
+//        context.getContext().addValve(new FrameworkSessionValve());
     }
 }

@@ -1,113 +1,92 @@
 package cn.framework.cache.session;
 
-import cn.framework.cache.resource.CacheWrapper;
+import cn.framework.cache.init.FrameworkCache;
+import cn.framework.core.utils.Exceptions;
+import cn.framework.core.utils.Springs;
 import cn.framework.core.utils.Strings;
-import org.apache.catalina.Manager;
-import org.apache.catalina.session.StandardSession;
+import net.sf.ehcache.Element;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.servlet.ServletRequest;
 
 /**
- * project code
+ * project visual-framework
  * package cn.framework.cache.session
- * create at 16/3/30 下午2:27<br/>
- * session implement by wenlai
+ * create at 16/4/22 上午12:14
  *
  * @author wenlai
  */
-public class FrameworkSession extends StandardSession implements AutoCloseable {
+public class FrameworkSession {
 
-    /**
-     * cache wrapper
-     */
-    private CacheWrapper handler;
+    public final String sessionKey;
 
-    /**
-     * keys
-     */
-    private Set<String> keys = new HashSet<>();
+    public final String sessionId;
 
-    /**
-     * constructor
-     *
-     * @param manager
-     * @param id
-     */
-    public FrameworkSession(Manager manager, String id) {
-        super(manager);
-        if (!Strings.isNotNullOrEmpty(id)) {
-            id = manager.getSessionIdGenerator().generateSessionId();
-        }
-        super.setId(id);
-        super.setValid(true);
-        this.handler = CacheWrapper.wrap(id);
+    public FrameworkSession(String sessionKey, String sessionId) {
+        this.sessionId = sessionId;
+        this.sessionKey = sessionKey;
     }
 
     /**
-     * set attr
+     * 从request之中获取session
      *
-     * @param name
+     * @param request
+     *
+     * @return
+     */
+    public static FrameworkSession getSession(ServletRequest request) {
+        return (FrameworkSession) request.getAttribute(FrameworkSessionFilter.ATTR_KEY);
+    }
+
+    public static FrameworkSession wrap(String sessionKey, String sessionId) {
+        return new FrameworkSession(sessionKey, sessionId);
+    }
+
+    /**
+     * 获取值
+     *
+     * @param key
+     *
+     * @return
+     */
+    public <T> T get(String key) {
+        try {
+            FrameworkCache cache = Springs.get(FrameworkCache.BEAN_NAME);
+            if (cache != null && cache.getCache("session") != null) {
+                Element element = cache.getCache("session").get(Strings.append(sessionId, ":", key));
+                if (element != null) {
+                    return (T) element.getObjectValue();
+                }
+            }
+        }
+        catch (Exception x) {
+            Exceptions.processException(x);
+        }
+        return null;
+    }
+
+    /**
+     * 设置值
+     *
+     * @param key
      * @param value
      */
-    @Override
-    public void setAttribute(String name, Object value) {
-        this.keys.add(name);
-        this.handler.add(name, value);
+    public void set(String key, Object value) {
+        FrameworkCache cache = Springs.get(FrameworkCache.BEAN_NAME);
+        if (cache != null && cache.getCache("session") != null) {
+            cache.getCache("session").put(new Element(Strings.append(sessionId, ":", key), value));
+        }
     }
 
     /**
-     * keys
+     * 删除值
      *
-     * @return
+     * @param key
      */
-    @Override
-    protected String[] keys() {
-        return this.keys.toArray(new String[0]);
+    public void remove(String key) {
+        FrameworkCache cache = Springs.get(FrameworkCache.BEAN_NAME);
+        if (cache != null && cache.getCache("session") != null) {
+            cache.getCache("session").remove(Strings.append(sessionId, ":", key));
+        }
     }
 
-    /**
-     * get attr
-     *
-     * @param name
-     *
-     * @return
-     */
-    @Override
-    public Object getAttribute(String name) {
-        return this.handler.select(name);
-    }
-
-    /**
-     * remove attr
-     *
-     * @param name
-     */
-    @Override
-    public void removeAttribute(String name) {
-        this.keys.remove(name);
-        this.handler.delete(name);
-    }
-
-    /**
-     * remove all
-     */
-    public void removeSelf() {
-        this.handler.removeAll();
-    }
-
-    @Override
-    public String getId() {
-        return this.id;
-    }
-
-    /**
-     * close
-     *
-     * @throws Exception
-     */
-    @Override
-    public void close() throws Exception {
-        this.removeSelf();
-    }
 }

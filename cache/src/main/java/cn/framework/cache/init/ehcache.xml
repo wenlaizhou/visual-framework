@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true" monitoring="autodetect" dynamicConfig="true" name="wenlai">
+<!--xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd"-->
+<ehcache updateCheck="true" monitoring="autodetect" dynamicConfig="true" name="wenlai" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd">
 
     <diskStore path="${cache.dir}" />
 
@@ -17,8 +17,19 @@
         <persistence strategy="distributed" synchronousWrites="true" />
     </cache>
 
-    <cache name="session" logging="true" maxElementsInMemory="1024676" timeToLiveSeconds="${session.expireSeconds}">
-        <cacheEventListenerFactory class="cn.framework.cache.session.FrameworkSessionListener" listenFor="all" />
-        <persistence strategy="distributed" synchronousWrites="true" />
+    <cache name="session" logging="true" maxElementsInMemory="1024676" timeToLiveSeconds="${session.expireSeconds}"
+            maxElementsOnDisk="200000"
+            eternal="false"
+            timeToIdleSeconds="3600"
+            overflowToDisk="true"
+            diskPersistent="true"
+            diskSpoolBufferSizeMB="600"
+            diskExpiryThreadIntervalSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    >
+        <!--<cacheEventListenerFactory class="cn.framework.cache.session.FrameworkSessionListener" listenFor="all" />-->
+        <!--<persistence strategy="distributed" synchronousWrites="true" />-->
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.store.DiskStoreBootstrapCacheLoaderFactory" properties="bootstrapAsynchronously=false" />
     </cache>
+    ${cache.distribute}
 </ehcache>

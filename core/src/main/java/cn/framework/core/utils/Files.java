@@ -247,7 +247,9 @@ public final class Files {
 
     /**
      * 去除路径和后缀名的文件名
+     *
      * @param path
+     *
      * @return
      */
     public static String getFileNameWithoutExtension(String path) {
@@ -318,6 +320,19 @@ public final class Files {
             LogProvider.getFrameworkErrorLogger().error(x);
             return false;
         }
+    }
+
+    /**
+     * 判断文件是否存在,以下情况都会返回true<br/>
+     * 1 文件存在于目录系统中<br/>
+     * 2 文件存在于classpath路径下
+     *
+     * @param path 文件资源路径
+     *
+     * @return true if file exists
+     */
+    public static boolean existFilesOrResource(String path) {
+        return existFilesOrResource(path, Projects.MAIN_CLASS_LOADER);
     }
 
     /**

@@ -115,6 +115,30 @@ public class FrameworkContainer {
         }
 
         /**
+         * add dynamic property support
+         */
+        Node dynamicNode = xpathNode("//dynamicConfig", propertyProcessDoc);
+        if (dynamicNode != null && Strings.isNotNullOrEmpty(attr("src", dynamicNode))) {
+            String filePath = Property.fill(attr("src", dynamicNode));
+            Thread t = new Thread(() -> {
+                for (; ; ) {
+                    try {
+                        Thread.sleep(60000);
+                        if (Files.existFilesOrResource(filePath)) {
+                            Property.load(filePath);
+                        }
+                    }
+                    catch (Exception x) {
+                        x.printStackTrace();
+                    }
+                }
+            });
+            t.setDaemon(true);
+            t.setName(Strings.append("dynamic-config-thread"));
+            t.start();
+        }
+
+        /**
          * build node by xml config
          */
         this.config = node(confPath);

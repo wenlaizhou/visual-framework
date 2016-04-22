@@ -18,6 +18,7 @@ import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.w3c.dom.Node;
 
 import static cn.framework.core.utils.Exceptions.processException;
+import static cn.framework.core.utils.Pair.newPair;
 
 /**
  * 初始化参数<br>
@@ -285,5 +286,6 @@ public class Context {
         sessionMP.addURLPattern(pattern);
         this.context.addFilterDef(sessionFD);
         this.context.addFilterMap(sessionMP);
+        System.out.println(Strings.format("add filter : ${name}, ${class}, ${pattern}", newPair("name", filterName), newPair("class", filterClass), newPair("pattern", pattern)));
     }
 }

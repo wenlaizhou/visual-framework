@@ -105,6 +105,17 @@ public final class ThreadPool {
         PoolContainer.SCHEDULED_POOL.scheduleWithFixedDelay(task, delaySecond, delaySecond, TimeUnit.SECONDS);
     }
 
+    /**
+     * 添加延迟任务
+     *
+     * @param task         task
+     * @param delaySeconds 延迟秒数
+     */
+    public static void addDelayTask(Task task, int delaySeconds) {
+        THREAD_POOL_LOGGER.info(String.format("添加延迟任务：%1$s，间隔时间时间：%2$s秒", task.getName(), delaySeconds));
+        PoolContainer.SCHEDULED_POOL.schedule(task, delaySeconds, TimeUnit.SECONDS);
+    }
+
     //    /**
     //     * 线程池监控类
     //     *

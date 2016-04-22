@@ -59,7 +59,12 @@ framework.checkDbResult = function (dbResult) {
  * @param url 请求地址
  * @param headers 请求头,如果没有则传null
  * @param data 请求数据信息
- * @param callback 请求成功回调信息
+ * @param callback 获取header方法如下: <br />
+ * $.ajax({
+ *      success: function(data, status, xhr) {
+ *          console.log(xhr.getResponseHeader("Content-Type"));
+ *      }
+ *  });
  */
 framework.post = function (url, headers, data, callback) {
     if (arguments.length < 2) {
@@ -85,6 +90,19 @@ framework.post = function (url, headers, data, callback) {
     }
 };
 
+/**
+ * 发送ajax请求
+ * @param method
+ * @param url
+ * @param headers
+ * @param data
+ * @param callback 获取header方法如下: <br />
+ * $.ajax({
+ *      success: function(data, status, xhr) {
+ *          console.log(xhr.getResponseHeader("Content-Type"));
+ *      }
+ *  });
+ */
 framework.ajax = function (method, url, headers, data, callback) {
     $.ajax(url, {
         type: method.toUpperCase(),
@@ -102,7 +120,7 @@ framework.ajax = function (method, url, headers, data, callback) {
         },
         success: function (res, status, xhr) {
             if (callback) {
-                callback(res);
+                callback(res, status, xhr);
             }
         }
     });
@@ -113,7 +131,12 @@ framework.ajax = function (method, url, headers, data, callback) {
  * @param url 请求地址
  * @param headers 请求头,如果没有则传null
  * @param data 请求数据信息
- * @param callback 请求成功回调信息
+ * @param callback 获取header方法如下: <br />
+ * $.ajax({
+ *      success: function(data, status, xhr) {
+ *          console.log(xhr.getResponseHeader("Content-Type"));
+ *      }
+ *  });
  */
 framework.get = function (url, headers, data, callback) {
     if (arguments.length < 2) {

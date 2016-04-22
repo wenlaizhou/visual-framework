@@ -47,7 +47,8 @@ public final class Xmls {
                             include(includeNode, n);
                         }
                         catch (Exception x) {
-                            Exceptions.processException(x);
+                            //                            Exceptions.processException(x);
+                            x.printStackTrace();
                         }
                     }
                 });
@@ -55,7 +56,8 @@ public final class Xmls {
             return document;
         }
         catch (Exception x) {
-            Exceptions.processException(x);
+            //            Exceptions.processException(x);
+            x.printStackTrace();
         }
         return null;
     }
